@@ -1,6 +1,6 @@
+<a id = "anchor_5"></a>
 # Graphics editor
 
-<a id = "anchor_5"></a>
 __Content list__
 1. [About the program](#anchor_1)
 2. [What is implemented in the program](#anchor_2)
@@ -9,11 +9,11 @@ __Content list__
 
 ---
 <a id = "anchor_1"></a>
-#### About the program
+### About the program
 In this project, the back-end logic of the graphic editor is implemented, which supports such shapes as a circle and a rectangle. These figures can be independent and combined into groups, which can also be combined with each other. Also, for clarity, the front-end part was implemented using the [SFML](https://www.sfml-dev.org/tutorials/2.5/) graphic library.
 
 <a id = "anchor_2"></a>
-#### What is implemented in the program
+### What is implemented in the program
 >- *The word "Element" refers to both figures and groups*
 >- *All operations take into account that groups can be non-empty*
 
@@ -30,13 +30,13 @@ In this project, the back-end logic of the graphic editor is implemented, which 
 
 
 <a id = "anchor_3"></a>
-#### What technologies were used
+### What technologies were used
 - Pattern builder
 - Pattern iterator
 
 
 <a id = "anchor_4"></a>
-#### Some features of the code
+### Some features of the code
 - The root for everything is a group, which must be created first and add unrelated elements to it
 - Be careful when adding new items! Since they are added to the lists, they are drawn one by one. You need to go from large elements to smaller ones. *Examples below*.
 
