@@ -17,88 +17,82 @@ class Iterator
 public:
 	typedef typename list<T*>::iterator it_type;
 
-	Iterator(U& children_, bool reverse = false) : children(children_)
-	{
-		it = children.begin();
-	}
-	void First() { it = children.begin(); }
-	void Next() { ++it; }
-	bool IsDone() { return (it == children.end()); }
-	T* Current() { return *it; }
+	Iterator(U& children_);
+
+	void	First();
+	void	Next();
+	bool	IsDone();
+	T*		Current();
 
 private:
-	U& children;
+	U&		children;
 	it_type it;
 };
+
 
 class Component
 {
 public:
-	bool outputting_flag{ false };
+	bool outputting_flag { false };
 
 	friend class Iterator<Component, list <Component*>>;
 
-	Component() { name = "Root"; }
-	~Component() {}
+	Component();
+	~Component();
 
-	void set_parent(Component* _parent) { parent = _parent; } // setters
-	virtual void set_radius(float _radius) { }
+	void				set_parent(Component* _parent);
+	virtual void		set_radius(float _radius);
 	
-	Component* get_parent() const { return parent; } // getters
-	float get_x_position() const { return x_position; }
-	float get_y_position() const { return y_position; }
-	float get_height() const { return height; }
-	float get_width() const { return width; }
-	string get_name() const { return name; }
-	virtual float get_radius() const { return 0; }
+	Component*			get_parent()		const;
+	string				get_name()			const;
+	float				get_x_position()	const;
+	float				get_y_position()	const;
+	float				get_height()		const;
+	float				get_width()			const;
+	virtual float		get_radius()		const;
 
-	virtual void add(Component* component) { }
-	virtual void remove(Component* component) { }
+	virtual void		add(Component* component);
+	virtual void		remove(Component* component);
+	virtual Component*	clone()	const;
+	void				general_copy(Component* component) const; // copying general parameters
+	virtual Component*	copy_elem(); // copy the entire element
 
-	virtual void drawing(RenderWindow& window) const { }
+	virtual void		relocating(float x, float y);
+	void				invalidate_element(Component* component);
+	virtual void		invalidate_additional_parameters(Component* component);
+	virtual void		remove_elem(Component* component);
+	void				repositioning(float x, float y); // set a new element position
+	void				relocate_elem(Component* component); // set a new element location
+	virtual Component*	search_by_coord(Component* max_nesting_component, float x, float y);
 
-	virtual bool is_composite() { return true; } // is it a composite element
+	virtual bool		is_composite();
+	int					nesting_cnt();
+	void				nesting_output();
 
-	virtual Component* clone() const { return new Component(*this); }
-
-	virtual void relocating(float x, float y) { }
-	void repositioning(float x, float y); // set a new element position
-
-	void relocate_elem(Component* component); // set a new element location 
-
-	int nesting_cnt();
-	void nesting_output();
-
-	void invalidate_element(Component* component); // invalidate the element
-	virtual void invalidate_additional_parameters(Component* component) { }
-	virtual void remove_elem(Component* component) { } // delete element and its data
-	
-	void general_copy(Component* component) const; // function for copying general parameters
-	virtual Component* copy_elem() { return nullptr; } // copy the entire element
-
-	virtual Component* search_by_coord(Component* max_nesting_component, float x, float y) { return nullptr; }
-
-	virtual void information_output() { } // data output
-	virtual void free_memory() { }
+	virtual void		drawing(RenderWindow& window) const;
+	virtual void		information_output();
+	virtual void		free_memory();
 
 protected:
-	Component* parent{ nullptr };
-	string name;
+	Component*	parent { nullptr };
+	string		name;
 
-	float x_position{ 0 }, y_position{ 0 };
-	float height{ 0 }, width{ 0 };
+	float		x_position { 0 };
+	float		y_position { 0 };
+	float		height { 0 };
+	float		width { 0 };
 
-	bool nesting_flag{ false };
+	bool		nesting_flag { false };
 };
 
 
 class MyShape : public Component
 {
 public:
-	bool is_composite() { return false; }
-	void relocating(float x, float y) override;
-	void remove(Component* component) override;
-	void remove_elem(Component* component) override;
+	void remove(Component* component)		override;
+	void remove_elem(Component* component)	override;
+	void relocating(float x, float y)		override;
+	bool is_composite();
 	void free_memory();
 };
 
@@ -106,31 +100,22 @@ public:
 class Circle : public MyShape
 {
 public:
-	Circle() : radius(0) { name = "Circle"; }
-	Circle(float _radius, float x, float y) : radius(_radius)
-	{
-		name = "Circle";
-		x_position = x;
-		y_position = y;
-		height = width = radius * 2;
-	}
-	~Circle() {}
+	Circle();
+	Circle(float _radius, float x, float y);
+	~Circle();
 
+	void		set_radius(float _radius) override;
+	float		get_radius() const override;
 
-	void set_radius(float _radius) override { radius = _radius; }
-	float get_radius() const override { return radius; }
+	Component*	clone() const override;
+	Component*	copy_elem() override;
+	void		copy_additional_parameters(Component* component);
 
-	Component* clone() const override { return new Circle(*this); }
+	void		invalidate_additional_parameters(Component* component) override;
+	Component*	search_by_coord(Component* max_nesting_component, float x, float y)	override;
 
-	void invalidate_additional_parameters(Component* component) override { radius = 0; }
-
-	Component* search_by_coord(Component* max_nesting_component, float x, float y) override;
-
-	void copy_additional_parameters(Component* component);
-	Component* copy_elem() override;
-
-	void information_output() override;
-	void drawing(RenderWindow& window) const override;
+	void		drawing(RenderWindow& window) const override;
+	void		information_output() override;
 
 private:
 	float radius;
@@ -140,71 +125,51 @@ private:
 class Rectangle : public MyShape
 {
 public:
-	Rectangle() { name = "Rectangle"; }
-	Rectangle(float _height, float _width, float x, float y)
-	{
-		name = "Rectangle";
-		x_position = x;
-		y_position = y;
-		height = _height;
-		width = _width;
-	}
-	~Rectangle() {}
+	Rectangle();
+	Rectangle(float _height, float _width, float x, float y);
+	~Rectangle();
 
-	
-	Component* clone() const override { return new Rectangle(*this); }
+	Component*	clone() const override;
+	Component*	copy_elem() override;
 
-	Component* search_by_coord(Component* max_nesting_component, float x, float y) override;
+	Component*	search_by_coord(Component* max_nesting_component, float x, float y) override;
 
-	Component* copy_elem() override;
-
-	void information_output() override;
-	void drawing(RenderWindow& window) const override;
+	void		drawing(RenderWindow& window) const override;
+	void		information_output() override;
 };
 
 
 class MyGroup : public Component
 {
 public:
-	MyGroup() { name = "Group"; }
-	MyGroup(const string _name)
-	{
-		name = _name;
-	}
-	~MyGroup() {}
-
-	
-	bool is_composite() { return true; }
-	Component* clone() const override { return new MyGroup(*this); }
-
-	void group_increase(Component* component); // set new dimensions for the group
-
-	void add(Component* component) override;
-	void remove(Component* component) override;
+	MyGroup();
+	MyGroup(const string _name);
+	~MyGroup();
 
 	virtual Iterator<Component, list <Component*>>* create_iterator()
 	{
 		return new Iterator<Component, list <Component*>>(this->components);
 	}
+	
+	void		add(Component* component)			override;
+	void		remove(Component* component)		override;
+	Component*	clone()						const	override;
+	Component*	copy_elem()							override;
+	void		remove_elem(Component* component)	override;
 
-	void relocating(float x, float y) override;
+	void		group_increase(Component* component); // set new dimensions for the group
+	void		invalidate_additional_parameters(Component* component) override;
+	void		relocating(float x, float y) override;
+	Component*	search_by_coord(Component* max_nesting_component, float x, float y) override;
 
-	void remove_elem(Component* component) override;
-	void invalidate_additional_parameters(Component* component) override;
+	bool		is_composite();
 
-	Component* copy_elem() override;
-
-
-	void information_output() override;
-
-	Component* search_by_coord(Component* max_nesting_component, float x, float y) override;
-
-	void drawing(RenderWindow& window) const override;
-	void free_memory();
+	void		drawing(RenderWindow& window) const override;
+	void		information_output() override;
+	void		free_memory();
 
 protected:
 	list <Component*> components;
-
 };
 
-#endif
+#endif // ELEMENTS_H
